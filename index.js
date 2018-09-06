@@ -1,7 +1,6 @@
 const rssParserConstructor = require('rss-parser');
 const rssParser = new rssParserConstructor();
 const knex = require('knex')(require('./knex.conf.js'));
-// const fetch = require('node-fetch');
 
 function feedHandler(resolve, reject, feed, err, data) {
   // Hanlde errors
