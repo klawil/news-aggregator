@@ -61,37 +61,26 @@ function insertArticles(articles) {
     .insert(articles);
 }
 
-// Get all of the RSS feeds to parse
-knex('feeds')
-  .then((rssFeeds) => {
-    let promises = rssFeeds
-      .map((feed) =>
-        (new Promise((resolve, reject) => rssParser.parseURL(
-          feed.url,
-          feedHandler.bind(null, resolve, reject, feed)
-        )))
-          .then(checkArticlesForExistence)
-          .then(insertArticles)
-      );
+function getFeeds() {
+  return knex('feeds')
+    .then((rssFeeds) => {
+      let promises = rssFeeds
+        .map((feed) =>
+          (new Promise((resolve, reject) => rssParser.parseURL(
+            feed.url,
+            feedHandler.bind(null, resolve, reject, feed)
+          )))
+            .then(checkArticlesForExistence)
+            .then(insertArticles)
+        );
 
-    return Promise.all(promises);
-  })
-  .catch((err) => {
-    console.log(err);
-  })
-  .finally(knex.destroy);
+      return Promise.all(promises);
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+    .finally(knex.destroy);
+}
 
-/*
-rssParser.parseURL('http://www.npr.org/rss/rss.php?id=1001', (err, feed) => {
-  console.log(feed.title);
-
-  console.log(feed.items.length);
-  let dbEntry = {
-    url: feed.items[0].link,
-    title: feed.items[0].title,
-    date: new Date(feed.items[0].pubDate),
-    source: 'Reuters'
-  };
-  console.log(JSON.stringify(dbEntry));
-});
-*/
+// Truncate the articles table
+knex('articles').truncate().then(getFeeds);
