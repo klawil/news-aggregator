@@ -14,5 +14,10 @@
     "mysql": "^2.16.0",
     "node-fetch": "^2.2.0",
     "rss-parser": "^3.4.3"
+  },
+  "scripts": {
+    "migrate": "knex --knexfile knex.conf.js migrate:latest",
+    "rollback": "knex --knexfile knex.conf.js migrate:rollback",
+    "run": "node index.js && node parse_article.js && node make_epub.js"
   }
 }
