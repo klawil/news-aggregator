@@ -39,13 +39,10 @@ function parseArticleBody(article, document) {
     case 4:
       p_selector = 'div.field-name-body>div>div>p,div.field-name-body>div>div>div';
       break;
-    // case 5:
-    // case 6:
-    // case 7:
-    case 8:
+    case 5:
       body_selector = 'div.post-content';
       break;
-    case 9:
+    case 6:
       p_selector = 'div.bigtext>p';
       break;
     default:
