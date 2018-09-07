@@ -133,7 +133,6 @@ knex
 
     resolve(res);
   })))
-  .then(console.log)
   .then(() => fs.unlinkSync(epub_output))
   .then(() => fs.unlinkSync(mobi_output))
   .finally(knex.destroy);

@@ -3,6 +3,8 @@ const JSDOM = require('jsdom').JSDOM;
 const fetch = require('node-fetch');
 
 function parseArticle(article) {
+  let articleFooter = `<p>${article.name}<br>${article.slant_string}<br>${article.quality_string}</p>`;
+
   return fetch(article.url)
     .then((response) => response.text())
     .then((html) => new JSDOM(html))
@@ -13,7 +15,7 @@ function parseArticle(article) {
       .update({
         body: typeof body === 'undefined'
           ? 'no-article'
-          : body.replace(/[\u0800-\uFFFF]/g, '').trim()
+          : body.replace(/[\u0800-\uFFFF]/g, '').trim() + articleFooter
       }))
     .then(() => console.log(article.url))
     .catch((err) => {
@@ -72,6 +74,15 @@ function parseArticleBody(article, document) {
 }
 
 knex('articles')
+  .column({
+    id: 'articles.id',
+    name: 'sources.name',
+    url: 'articles.url',
+    slant_string: 'sources.slant_string',
+    quality_string: 'sources.quality_string',
+    source_id: 'articles.source_id'
+  })
+  .leftJoin('sources', 'articles.source_id', 'sources.id')
   .whereNull('body')
   .orderBy('publish_date', 'DESC')
   .then((articles) => Promise.all(articles.map(parseArticle)))
