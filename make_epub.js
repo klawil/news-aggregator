@@ -44,7 +44,7 @@ knex
     FROM articles a1
     INNER JOIN (
       SELECT
-        MIN(publish_date) AS publish_date,
+        MAX(publish_date) AS publish_date,
         source_id
       FROM articles
       WHERE
@@ -72,12 +72,12 @@ knex
       FROM articles a1
       INNER JOIN (
         SELECT
-          MIN(a1.publish_date) AS publish_date,
+          MAX(a1.publish_date) AS publish_date,
           a1.source_id
         FROM articles a1
         LEFT JOIN (
           SELECT
-            MIN(publish_date) AS publish_date,
+            MAX(publish_date) AS publish_date,
             source_id
           FROM articles
           WHERE
