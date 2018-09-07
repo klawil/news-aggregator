@@ -27,10 +27,16 @@ function parseArticle(article) {
 function parseArticleBody(article, document) {
   let body_selector;
   let p_selector;
+  let removeSelectors = [];
 
   switch (article.source_id) {
     case 1:
       body_selector = 'div.StandardArticleBody_body';
+
+      removeSelectors = [
+        '.Image_container',
+        '.module'
+      ];
       break;
     case 2:
       p_selector = 'div#storytext>p';
@@ -40,6 +46,11 @@ function parseArticleBody(article, document) {
       break;
     case 4:
       p_selector = 'div.field-name-body>div>div>p,div.field-name-body>div>div>div';
+
+      removeSelectors = [
+        '.rollover-people-block',
+        '.dfp-tag-wrapper'
+      ];
       break;
     case 5:
       body_selector = 'div.post-content';
@@ -51,6 +62,10 @@ function parseArticleBody(article, document) {
       console.log(`Unrecognized source ${article.source_id}`);
       return;
   }
+
+  removeSelectors
+    .forEach((selector) => document.querySelectorAll(selector)
+      .forEach((node) => node.parentElement.removeChild(node)));
 
   if (typeof body_selector !== 'undefined') {
     let baseString = document.querySelector(body_selector).innerHTML
