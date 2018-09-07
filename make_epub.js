@@ -34,6 +34,7 @@ let epubData = {
   title,
   author: 'Multiple',
   output: epub_output,
+  css: fs.readFileSync('./template.css'),
   content: []
 };
 
