@@ -34,6 +34,7 @@ function parseArticleBody(article, document) {
       body_selector = 'div.StandardArticleBody_body';
 
       removeSelectors = [
+        ...removeSelectors,
         '.Image_container',
         '.module'
       ];
@@ -48,12 +49,18 @@ function parseArticleBody(article, document) {
       p_selector = 'div.field-name-body>div>div>p,div.field-name-body>div>div>div';
 
       removeSelectors = [
+        ...removeSelectors,
         '.rollover-people-block',
         '.dfp-tag-wrapper'
       ];
       break;
     case 5:
       body_selector = 'div.post-content';
+
+      removeSelectors = [
+        ...removeSelectors,
+        '#related_content'
+      ];
       break;
     case 6:
       p_selector = 'div.bigtext>p';
