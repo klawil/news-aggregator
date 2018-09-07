@@ -43,14 +43,29 @@ knex
     FROM articles a1
     INNER JOIN (
       SELECT
-        MAX(publish_date) AS publish_date,
-        source_id
-      FROM articles
+        MAX(a1.publish_date) AS publish_date_1,
+        MAX(a2.publish_date) AS publish_date_2,
+        a1.source_id
+      FROM articles a1
+      LEFT JOIN (
+        SELECT
+          MAX(publish_date) AS publish_date,
+          source_id
+        FROM articles
+        WHERE
+          body != 'no-article' AND
+          body IS NOT NULL
+        GROUP BY source_id
+      ) a2 ON a1.source_id = a2.source_id
       WHERE
+        a1.publish_date < a2.publish_date AND
         body != 'no-article' AND
         body IS NOT NULL
-      GROUP BY source_id
-    ) a2 ON a1.source_id = a2.source_id AND a1.publish_date = a2.publish_date
+      GROUP BY a1.source_id
+    ) a2 ON a1.source_id = a2.source_id AND (
+      a1.publish_date = a2.publish_date_1 OR
+      a1.publish_date = a2.publish_date_2
+    )
     WHERE
       body != 'no-article' AND
       body IS NOT NULL
@@ -58,53 +73,13 @@ knex
   `)
   .then((response) => response[0])
   .then(shuffle)
-  .then((first_articles) => {
-    epubData.content = first_articles
+  .then((articles) => {
+    epubData.content = articles
       .map((article) => ({
         title: article.title,
         data: article.body
       }));
    })
-  .then(() => knex
-    .raw(`
-      SELECT id, title, body
-      FROM articles a1
-      INNER JOIN (
-        SELECT
-          MAX(a1.publish_date) AS publish_date,
-          a1.source_id
-        FROM articles a1
-        LEFT JOIN (
-          SELECT
-            MAX(publish_date) AS publish_date,
-            source_id
-          FROM articles
-          WHERE
-            body != 'no-article' AND
-            body IS NOT NULL
-          GROUP BY source_id
-        ) a2 ON a1.source_id = a2.source_id
-        WHERE
-          a1.publish_date > a2.publish_date AND
-          body != 'no-article' AND
-          body IS NOT NULL
-        GROUP BY a1.source_id
-      ) a2 ON a1.source_id = a2.source_id AND a1.publish_date = a2.publish_date
-      WHERE
-        body != 'no-article' AND
-        body IS NOT NULL
-      ORDER BY a1.source_id
-    `)
-  )
-  .then((response) => response[0])
-  .then(shuffle)
-  .then((first_articles) => {
-    first_articles
-      .forEach((article) => epubData.content.push({
-        title: article.title,
-        data: article.body
-      }));
-  })
   .then(() => (new epub(epubData)).promise)
   .then(() => new Promise((resolve, reject) => {
     converter(fs.readFileSync(epub_output), (error, mobi) => {
