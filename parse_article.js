@@ -15,7 +15,7 @@ function parseArticle(article) {
       .update({
         body: typeof body === 'undefined'
           ? 'no-article'
-          : body.replace(/[\u0800-\uFFFF]/g, '').trim() + articleFooter
+          : body.trim() + articleFooter
       }))
     .then(() => console.log(article.url))
     .catch((err) => {
