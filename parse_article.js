@@ -36,7 +36,8 @@ function parseArticleBody(article, document) {
       removeSelectors = [
         ...removeSelectors,
         '.Image_container',
-        '.module'
+        '.module',
+        '.Slideshow_container'
       ];
       break;
     case 2:
