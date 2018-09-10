@@ -44,7 +44,7 @@ function parseArticleBody(article, document) {
       p_selector = 'div#storytext>p';
       break;
     case 3:
-      p_selector = 'div.story-body__inner>p,div#story-body>p';
+      p_selector = 'div.story-body__inner>p,div#story-body>p,div.story-body__inner>p,div#story-body>ul,div.story-body__inner>p,div#story-body>h3';
       break;
     case 4:
       p_selector = 'div.field-name-body>div>div>p,div.field-name-body>div>div>div';
@@ -85,14 +85,14 @@ function parseArticleBody(article, document) {
     return baseString;
   } else if (typeof p_selector !== 'undefined') {
     let baseString = [ ...document.querySelectorAll(p_selector) ]
-      .map((element) => element.innerHTML)
-      .join('</p><p>');
+      .map((element) => element.outerHTML)
+      .join('');
 
     if (baseString === '') {
       return;
     }
 
-    return '<p>' + baseString + '</p>';
+    return baseString;
   }
 }
 
