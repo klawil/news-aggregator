@@ -5,7 +5,16 @@ const ProgressBar = require('progress');
 
 let bar;
 
+function make2Characters(str) {
+  return ('00' + str).slice(-2);
+}
+
 function parseArticle(article) {
+  let date = article.publish_date;
+
+  let articleHeader = date === null
+    ? ''
+    : `<p>${date.getFullYear()}-${make2Characters(date.getMonth() + 1)}-${make2Characters(date.getDate())} ${make2Characters(date.getHours())}:${make2Characters(date.getMinutes())}</p>`;
   let articleFooter = `<p>${article.name}<br>${article.slant_string}<br>${article.quality_string}</p>`;
   let localBody;
 
@@ -22,10 +31,9 @@ function parseArticle(article) {
         .update({
           body: typeof body === 'undefined'
             ? 'no-article'
-            : body.trim() + articleFooter
+            : articleHeader + body.trim() + articleFooter
         });
     })
-    // .then(() => console.log(article.url))
     .then(() => {
       if (typeof localBody === 'undefined') {
         throw new Error('No article body found');
@@ -159,6 +167,7 @@ knex('articles')
     id: 'articles.id',
     name: 'sources.name',
     url: 'articles.url',
+    publish_date: 'articles.publish_date',
     slant_string: 'sources.slant_string',
     quality_string: 'sources.quality_string',
     source_id: 'articles.source_id'
