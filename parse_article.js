@@ -121,6 +121,14 @@ function parseArticleBody(article, document) {
         'p.story-continued'
       ];
       break;
+    case 10:
+      div_selector = [
+        '.primary-content-column>p',
+        '.primary-content-column>ul',
+        'div.text>p',
+        'div.text>blockquote'
+      ];
+      break;
     default:
       throw new Error(`Unrecognized source: ${article.source_id}`);
   }

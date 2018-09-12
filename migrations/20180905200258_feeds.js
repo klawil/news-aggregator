@@ -65,6 +65,10 @@ exports.up = (knex) => knex.schema.createTable('feeds', (table) => {
         source_id: 9,
         url: 'http://www.politico.com/rss/politics08.xml'
       },
+      {
+        source_id: 10,
+        url: 'https://truthout.org/latest/feed/'
+      },
     ]));
 
 exports.down = (knex) => knex.schema.dropTableIfExists('feeds');

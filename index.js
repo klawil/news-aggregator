@@ -14,14 +14,16 @@ function feedHandler(resolve, reject, feed, err, data) {
   }
 
   // Count the articles
-  let articleInserts = [];
-  data.items
+  let articleInserts = data.items
     .filter((article) => {
       let skip_strings = [];
 
       switch (feed.source_id) {
         case 7:
           skip_strings.push('/watch/');
+          break;
+        case 10:
+          skip_strings.push('/art/');
           break;
       }
 
@@ -31,13 +33,12 @@ function feedHandler(resolve, reject, feed, err, data) {
           article.link.indexOf(currentString) === -1,
           true);
     })
-    .forEach((article) => {
-      articleInserts.push({
-        source_id: feed.source_id,
-        title: article.title,
-        url: article.link,
-        publish_date: new Date(article.pubDate)
-      })
+    .map((article) => ({
+      source_id: feed.source_id,
+      title: article.title,
+      url: article.link,
+      publish_date: new Date(article.pubDate)
+    }))
     .sort((article1, article2) => {
       if (article1.publish_date < article2.publish_date) {
         return 1;
@@ -46,7 +47,6 @@ function feedHandler(resolve, reject, feed, err, data) {
       return -1;
     })
     .slice(0, 5);
-  });
   console.log(`Done with feed ${feed.id}`);
   resolve(articleInserts);
 }

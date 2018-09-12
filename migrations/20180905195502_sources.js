@@ -71,6 +71,13 @@ exports.up = (knex) => knex.schema.createTable('sources', (table) => {
         quality: 55,
         quality_string: 'Fact Reporting'
       },
+      { // 10
+        name: 'Truthout',
+        slant: -24,
+        slant_string: 'Hyper-Partisan Left',
+        quality: 36,
+        quality_string: 'Analysis'
+      },
     ]));
 
 exports.down = (knex) => knex.schema.dropTableIfExists('sources');
