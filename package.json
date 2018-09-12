@@ -19,6 +19,8 @@
   "scripts": {
     "migrate": "knex --knexfile knex.conf.js migrate:latest",
     "rollback": "knex --knexfile knex.conf.js migrate:rollback",
-    "run": "node index.js && node parse_article.js && node make_epub.js"
+    "remigrate": "npm run rollback && npm run migrate",
+    "parse": "node index.js && node parse_article.js",
+    "run": "npm run remigrate && npm run parse && node make_epub.js"
   }
 }
