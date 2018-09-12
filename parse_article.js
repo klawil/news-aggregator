@@ -41,13 +41,25 @@ function parseArticleBody(article, document) {
       ];
       break;
     case 2:
-      p_selector = 'div#storytext>p';
+      p_selector = [
+        'div#storytext>p'
+      ];
       break;
     case 3:
-      p_selector = 'div.story-body__inner>p,div#story-body>p,div.story-body__inner>p,div#story-body>ul,div.story-body__inner>p,div#story-body>h3';
+      p_selector = [
+        'div.story-body__inner>p',
+        'div#story-body>p',
+        'div.story-body__inner>ul',
+        'div#story-body>ul',
+        'div.story-body__inner>h3',
+        'div#story-body>h3'
+      ];
       break;
     case 4:
-      p_selector = 'div.field-name-body>div>div>p,div.field-name-body>div>div>div';
+      p_selector = [
+        'div.field-name-body>div>div>p',
+        'div.field-name-body>div>div>div'
+      ];
 
       removeSelectors = [
         ...removeSelectors,
@@ -64,7 +76,9 @@ function parseArticleBody(article, document) {
       ];
       break;
     case 6:
-      p_selector = 'div.bigtext>p';
+      p_selector = [
+        'div.bigtext>p'
+      ];
       break;
     default:
       console.log(`Unrecognized source ${article.source_id}`);
@@ -84,6 +98,7 @@ function parseArticleBody(article, document) {
 
     return baseString;
   } else if (typeof p_selector !== 'undefined') {
+    p_selector = p_selector.join(',');
     let baseString = [ ...document.querySelectorAll(p_selector) ]
       .map((element) => element.outerHTML)
       .join('');
