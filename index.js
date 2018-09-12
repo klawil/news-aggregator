@@ -15,38 +15,58 @@ function feedHandler(resolve, reject, feed, err, data) {
 
   // Count the articles
   let articleInserts = [];
-  data.items.forEach((article) => {
-    articleInserts.push({
-      source_id: feed.source_id,
-      title: article.title,
-      url: article.link,
-      publish_date: new Date(article.pubDate)
-    });
+  data.items
+    .filter((article) => {
+      let skip_strings = [];
+
+      switch (feed.source_id) {
+        case 7:
+          skip_strings.push('/watch/');
+          break;
+      }
+
+      return skip_strings
+        .reduce((previous, currentString) =>
+          previous &&
+          article.link.indexOf(currentString) === -1,
+          true);
+    })
+    .forEach((article) => {
+      articleInserts.push({
+        source_id: feed.source_id,
+        title: article.title,
+        url: article.link,
+        publish_date: new Date(article.pubDate)
+      })
+    .sort((article1, article2) => {
+      if (article1.publish_date < article2.publish_date) {
+        return 1;
+      }
+
+      return -1;
+    })
+    .slice(0, 5);
   });
-  console.log(`Done ${feed.id}`);
+  console.log(`Done with feed ${feed.id}`);
   resolve(articleInserts);
 }
 
-function checkArticlesForExistence(articles) {
-  if (articles.length === 0) {
-    return [];
-  }
+function collectArticles(articleListArray) {
+  let articles = [];
+  articleListArray
+    .forEach((articleList) => {
+      articles = articles.concat(articleList);
+    });
 
-  let promises = articles
-    .map((article) => knex('articles')
-      .where({
-        url: article.url
-      })
-      .then((data) => {
-        if (data.length === 0) {
-          return article;
-        }
+  return articles
+    .sort((article1, article2) => {
+      if (article1.publish_date < article2.publish_date) {
+        return 1;
+      }
 
-        return false;
-      })
-    );
-
-  return Promise.all(promises);
+      return -1;
+    })
+    .slice(0, 5);
 }
 
 function insertArticles(articles) {
@@ -65,12 +85,23 @@ function getFeeds() {
   return knex('feeds')
     .then((rssFeeds) => {
       let promises = rssFeeds
-        .map((feed) =>
-          (new Promise((resolve, reject) => rssParser.parseURL(
-            feed.url,
-            feedHandler.bind(null, resolve, reject, feed)
-          )))
-            .then(checkArticlesForExistence)
+        .reduce((feedCollection, feed) => {
+          if (typeof feedCollection[feed.source_id - 1] === 'undefined') {
+            feedCollection[feed.source_id - 1] = [];
+          }
+
+          feedCollection[feed.source_id - 1].push(feed);
+
+          return feedCollection;
+        }, [])
+        .map((feedList) =>
+          Promise.all(feedList.map((feed) =>
+            (new Promise((resolve, reject) => rssParser.parseURL(
+              feed.url,
+              feedHandler.bind(null, resolve, reject, feed)
+            )))
+          ))
+            .then(collectArticles)
             .then(insertArticles)
         );
 
