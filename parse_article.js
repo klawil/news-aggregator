@@ -1,37 +1,55 @@
 const knex = require('knex')(require('./knex.conf.js'));
 const JSDOM = require('jsdom').JSDOM;
 const fetch = require('node-fetch');
+const ProgressBar = require('progress');
+
+let bar;
 
 function parseArticle(article) {
   let articleFooter = `<p>${article.name}<br>${article.slant_string}<br>${article.quality_string}</p>`;
+  let localBody;
 
   return fetch(article.url)
     .then((response) => response.text())
     .then((html) => new JSDOM(html))
     .then((dom) => dom.window.document)
     .then((document) => parseArticleBody(article, document))
-    .then((body) => knex('articles')
-      .where('id', article.id)
-      .update({
-        body: typeof body === 'undefined'
-          ? 'no-article'
-          : body.trim() + articleFooter
-      }))
-    .then(() => console.log(article.url))
+    .then((body) => {
+      localBody = body;
+
+      return knex('articles')
+        .where('id', article.id)
+        .update({
+          body: typeof body === 'undefined'
+            ? 'no-article'
+            : body.trim() + articleFooter
+        });
+    })
+    // .then(() => console.log(article.url))
+    .then(() => {
+      if (typeof localBody === 'undefined') {
+        throw new Error('No article body found');
+      }
+
+      bar.tick();
+    })
     .catch((err) => {
-      console.log(article.url);
-      console.log(`-- ${err.message}`);
+      bar.interrupt(article.url);
+      bar.interrupt(`-- ${err.message}`);
+      bar.tick();
     });
 }
 
 function parseArticleBody(article, document) {
-  let body_selector;
-  let p_selector;
+  let div_selector;
   let removeSelectors = [];
 
   switch (article.source_id) {
     case 1:
-      body_selector = 'div.StandardArticleBody_body';
+      div_selector = [
+        'div.StandardArticleBody_body>p',
+        'div.StandardArticleBody_body>h3'
+      ];
 
       removeSelectors = [
         ...removeSelectors,
@@ -41,12 +59,12 @@ function parseArticleBody(article, document) {
       ];
       break;
     case 2:
-      p_selector = [
+      div_selector = [
         'div#storytext>p'
       ];
       break;
     case 3:
-      p_selector = [
+      div_selector = [
         'div.story-body__inner>p',
         'div#story-body>p',
         'div.story-body__inner>ul',
@@ -56,7 +74,7 @@ function parseArticleBody(article, document) {
       ];
       break;
     case 4:
-      p_selector = [
+      div_selector = [
         'div.field-name-body>div>div>p',
         'div.field-name-body>div>div>div'
       ];
@@ -68,7 +86,10 @@ function parseArticleBody(article, document) {
       ];
       break;
     case 5:
-      body_selector = 'div.post-content';
+      div_selector = [
+        'div.post-content>p',
+        'div.post-content>blockquote'
+      ];
 
       removeSelectors = [
         ...removeSelectors,
@@ -76,39 +97,48 @@ function parseArticleBody(article, document) {
       ];
       break;
     case 6:
-      p_selector = [
+      div_selector = [
         'div.bigtext>p'
       ];
       break;
+    case 7:
+      div_selector = [
+        '.field>p'
+      ];
+      break;
+    case 8:
+      div_selector = [
+        'article>p'
+      ];
+      break;
+    case 9:
+      div_selector = [
+        '.story-text>p'
+      ];
+
+      removeSelectors = [
+        ...removeSelectors,
+        'p.story-continued'
+      ];
+      break;
     default:
-      console.log(`Unrecognized source ${article.source_id}`);
-      return;
+      throw new Error(`Unrecognized source: ${article.source_id}`);
   }
 
   removeSelectors
     .forEach((selector) => document.querySelectorAll(selector)
       .forEach((node) => node.parentElement.removeChild(node)));
 
-  if (typeof body_selector !== 'undefined') {
-    let baseString = document.querySelector(body_selector).innerHTML
+  div_selector = div_selector.join(',');
+  let baseString = [ ...document.querySelectorAll(div_selector) ]
+    .map((element) => element.outerHTML)
+    .join('');
 
-    if (baseString === '') {
-      return;
-    }
-
-    return baseString;
-  } else if (typeof p_selector !== 'undefined') {
-    p_selector = p_selector.join(',');
-    let baseString = [ ...document.querySelectorAll(p_selector) ]
-      .map((element) => element.outerHTML)
-      .join('');
-
-    if (baseString === '') {
-      return;
-    }
-
-    return baseString;
+  if (baseString === '') {
+    return;
   }
+
+  return baseString;
 }
 
 knex('articles')
@@ -123,5 +153,9 @@ knex('articles')
   .leftJoin('sources', 'articles.source_id', 'sources.id')
   .whereNull('body')
   .orderBy('publish_date', 'DESC')
-  .then((articles) => Promise.all(articles.map(parseArticle)))
+  .then((articles) => {
+    bar = new ProgressBar('[:bar] :current/:total (:percent) :etas', { total: articles.length });
+
+    return Promise.all(articles.map(parseArticle));
+  })
   .finally(knex.destroy);

@@ -32,24 +32,45 @@ exports.up = (knex) => knex.schema.createTable('sources', (table) => {
       { // 4
         name: 'The Hill',
         slant: 9,
-        slant_string: 'Skews Conservative',
+        slant_string: 'Skews Right',
         quality: 54,
         quality_string: 'Fact Reporting'
       },
       { // 5
         name: 'The American Conservative',
         slant: 28,
-        slant_string: 'Hyper-Partisan Conservative',
+        slant_string: 'Hyper-Partisan Right',
         quality: 33,
         quality_string: 'Analysis'
       },
       { // 6
         name: 'The Washington Times',
         slant: 20,
-        slant_string: 'Hyper-Partisan Conservative',
+        slant_string: 'Hyper-Partisan Right',
         quality: 33,
         quality_string: 'Analysis'
-      }
+      },
+      { // 7
+        name: 'MSNBC',
+        slant: -19,
+        slant_string: 'Hyper-Partisan Left',
+        quality: 34,
+        quality_string: 'Analysis'
+      },
+      { // 8
+        name: 'The Washington Post',
+        slant: -10,
+        slant_string: 'Skews Left',
+        quality: 51,
+        quality_string: 'Fact Reporting'
+      },
+      { // 9
+        name: 'Politico',
+        slant: -3,
+        slant_string: 'Neutral',
+        quality: 55,
+        quality_string: 'Fact Reporting'
+      },
     ]));
 
 exports.down = (knex) => knex.schema.dropTableIfExists('sources');
