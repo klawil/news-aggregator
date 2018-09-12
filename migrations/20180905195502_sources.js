@@ -78,6 +78,13 @@ exports.up = (knex) => knex.schema.createTable('sources', (table) => {
         quality: 36,
         quality_string: 'Analysis'
       },
+      { // 11
+        name: 'The Christian Science Monitor',
+        slant: 6,
+        slant_string: 'Netural',
+        quality: 54,
+        quality_string: 'Fact Reporting'
+      },
     ]));
 
 exports.down = (knex) => knex.schema.dropTableIfExists('sources');

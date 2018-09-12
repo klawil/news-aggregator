@@ -129,6 +129,11 @@ function parseArticleBody(article, document) {
         'div.text>blockquote'
       ];
       break;
+    case 11:
+      div_selector = [
+        '.deep-read>p'
+      ];
+      break;
     default:
       throw new Error(`Unrecognized source: ${article.source_id}`);
   }

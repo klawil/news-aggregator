@@ -69,6 +69,10 @@ exports.up = (knex) => knex.schema.createTable('feeds', (table) => {
         source_id: 10,
         url: 'https://truthout.org/latest/feed/'
       },
+      {
+        source_id: 11,
+        url: 'http://rss.csmonitor.com/feeds/csm'
+      },
     ]));
 
 exports.down = (knex) => knex.schema.dropTableIfExists('feeds');
