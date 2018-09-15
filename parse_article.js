@@ -80,6 +80,11 @@ function parseArticleBody(article, document) {
         'div.story-body__inner>h3',
         'div#story-body>h3'
       ];
+
+      removeSelectors = [
+        ...removeSelectors,
+        '.story-body__unordered-list'
+      ];
       break;
     case 4:
       div_selector = [
