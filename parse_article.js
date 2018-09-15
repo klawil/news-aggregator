@@ -138,8 +138,12 @@ function parseArticleBody(article, document) {
       div_selector = [
         '.primary-content-column>p',
         '.primary-content-column>ul',
+        '.primary-content-column>blockquote',
+        '.primary-content-column>h2',
         'div.text>p',
-        'div.text>blockquote'
+        'div.text>ul',
+        'div.text>blockquote',
+        'div.text>h2'
       ];
       break;
     case 11:
