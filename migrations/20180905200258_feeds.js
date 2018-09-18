@@ -19,7 +19,7 @@ exports.up = (knex) => knex.schema.createTable('feeds', (table) => {
       },
       {
         source_id: 4,
-        url: 'http://thehill.com/rss/syndicator/19110'
+        url: 'https://thehill.com/rss/syndicator/19110'
       },
       {
         source_id: 5,
