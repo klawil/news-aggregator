@@ -51,12 +51,19 @@ function parseArticle(article) {
 function parseArticleBody(article, document) {
   let div_selector;
   let removeSelectors = [];
+  let divs_to_select = [
+    'p',
+    'h3',
+    'ul',
+    'div',
+    'blockquote',
+    'h2'
+  ];
 
   switch (article.source_id) {
     case 1:
       div_selector = [
-        'div.StandardArticleBody_body>p',
-        'div.StandardArticleBody_body>h3'
+        'div.StandardArticleBody_body'
       ];
 
       removeSelectors = [
@@ -73,12 +80,8 @@ function parseArticleBody(article, document) {
       break;
     case 3:
       div_selector = [
-        'div.story-body__inner>p',
-        'div#story-body>p',
-        'div.story-body__inner>ul',
-        'div#story-body>ul',
-        'div.story-body__inner>h3',
-        'div#story-body>h3'
+        'div.story-body__inner',
+        'div#story-body'
       ];
 
       removeSelectors = [
@@ -88,8 +91,7 @@ function parseArticleBody(article, document) {
       break;
     case 4:
       div_selector = [
-        'div.field-name-body>div>div>p',
-        'div.field-name-body>div>div>div'
+        'div.field-name-body>div>div'
       ];
 
       removeSelectors = [
@@ -100,8 +102,7 @@ function parseArticleBody(article, document) {
       break;
     case 5:
       div_selector = [
-        'div.post-content>p',
-        'div.post-content>blockquote'
+        'div.post-content'
       ];
 
       removeSelectors = [
@@ -111,22 +112,22 @@ function parseArticleBody(article, document) {
       break;
     case 6:
       div_selector = [
-        'div.bigtext>p'
+        'div.bigtext'
       ];
       break;
     case 7:
       div_selector = [
-        '.field>p'
+        '.field'
       ];
       break;
     case 8:
       div_selector = [
-        'article>p'
+        'article'
       ];
       break;
     case 9:
       div_selector = [
-        '.story-text>p'
+        '.story-text'
       ];
 
       removeSelectors = [
@@ -136,19 +137,13 @@ function parseArticleBody(article, document) {
       break;
     case 10:
       div_selector = [
-        '.primary-content-column>p',
-        '.primary-content-column>ul',
-        '.primary-content-column>blockquote',
-        '.primary-content-column>h2',
-        'div.text>p',
-        'div.text>ul',
-        'div.text>blockquote',
-        'div.text>h2'
+        '.primary-content-column',
+        'div.text'
       ];
       break;
     case 11:
       div_selector = [
-        '.deep-read>p'
+        '.deep-read'
       ];
       break;
     default:
@@ -159,6 +154,9 @@ function parseArticleBody(article, document) {
     .forEach((selector) => document.querySelectorAll(selector)
       .forEach((node) => node.parentElement.removeChild(node)));
 
+  div_selector = div_selector
+    .map((selector) => divs_to_select.map((div) => `${selector}>${div}`))
+    .reduce((all_selectors, new_selectors) => all_selectors.concat(new_selectors), []);
   div_selector = div_selector.join(',');
   let baseString = [ ...document.querySelectorAll(div_selector) ]
     .map((element) => element.outerHTML)
