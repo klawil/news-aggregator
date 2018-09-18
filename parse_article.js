@@ -166,7 +166,7 @@ function parseArticleBody(article, document) {
     return;
   }
 
-  return baseString;
+  return baseString.replace(/[\u{10000}-\u{10FFFF}]/ug, '');
 }
 
 knex('articles')
