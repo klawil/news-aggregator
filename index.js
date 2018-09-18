@@ -5,11 +5,9 @@ const knex = require('knex')(require('./knex.conf.js'));
 function feedHandler(resolve, reject, feed, err, data) {
   // Hanlde errors
   if (err) {
-    console.log(`Error ${feed.id}`);
-    reject({
-      feed,
-      err
-    });
+    console.log(`Error ${feed.id} (${feed.source_id})`);
+    console.log(err);
+    resolve([]);
     return;
   }
 
@@ -47,7 +45,7 @@ function feedHandler(resolve, reject, feed, err, data) {
       return -1;
     })
     .slice(0, 5);
-  console.log(`Done with feed ${feed.id}`);
+  console.log(`Done with feed ${feed.id} (${feed.source_id}): ${articleInserts.length}`);
   resolve(articleInserts);
 }
 
