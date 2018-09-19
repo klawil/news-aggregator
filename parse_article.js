@@ -75,7 +75,7 @@ function parseArticleBody(article, document) {
       break;
     case 2:
       div_selector = [
-        'div#storytext>p'
+        'div#storytext'
       ];
       break;
     case 3:
