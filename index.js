@@ -22,6 +22,7 @@ function feedHandler(resolve, reject, feed, err, data) {
           break;
         case 10:
           skip_strings.push('/art/');
+          skip_strings.push('/video/');
           break;
       }
 
