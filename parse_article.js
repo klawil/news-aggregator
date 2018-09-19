@@ -50,7 +50,9 @@ function parseArticle(article) {
 
 function parseArticleBody(article, document) {
   let div_selector;
-  let removeSelectors = [];
+  let removeSelectors = [
+    'img'
+  ];
   let divs_to_select = [
     'p',
     'h3',
