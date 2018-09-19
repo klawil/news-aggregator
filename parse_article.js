@@ -79,6 +79,12 @@ function parseArticleBody(article, document) {
       div_selector = [
         'div#storytext'
       ];
+
+      removeSelectors = [
+        ...removeSelectors,
+        'div.image',
+        'div.container'
+      ];
       break;
     case 3:
       div_selector = [
@@ -126,6 +132,11 @@ function parseArticleBody(article, document) {
       div_selector = [
         'article'
       ];
+
+      removeSelectors = [
+        ...removeSelectors,
+        'article>div'
+      ];
       break;
     case 9:
       div_selector = [
@@ -134,7 +145,13 @@ function parseArticleBody(article, document) {
 
       removeSelectors = [
         ...removeSelectors,
-        'p.story-continued'
+        'p.story-continued',
+        'div.story-intro',
+        'div.story-share',
+        'div.story-interrupt',
+        'div.story-supplement',
+        'aside',
+        'div.shifty-wrapper'
       ];
       break;
     case 10:
