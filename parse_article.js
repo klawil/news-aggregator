@@ -72,7 +72,8 @@ function parseArticleBody(article, document) {
         ...removeSelectors,
         '.Image_container',
         '.module',
-        '.Slideshow_container'
+        '.Slideshow_container',
+        '.StandardArticleBody_trustBadgeContainer'
       ];
       break;
     case 2:
@@ -82,8 +83,8 @@ function parseArticleBody(article, document) {
 
       removeSelectors = [
         ...removeSelectors,
-        'div.image',
-        'div.container'
+        'div.container',
+        'div.bucketwrap'
       ];
       break;
     case 3:
@@ -94,7 +95,9 @@ function parseArticleBody(article, document) {
 
       removeSelectors = [
         ...removeSelectors,
-        '.story-body__unordered-list'
+        '.story-body__unordered-list',
+        '.mpu-ad',
+        '.news_idt__image-slider'
       ];
       break;
     case 4:
@@ -122,6 +125,11 @@ function parseArticleBody(article, document) {
       div_selector = [
         'div.bigtext'
       ];
+
+      removeSelectors = [
+        ...removeSelectors,
+        'div.bigtext>div'
+      ];
       break;
     case 7:
       div_selector = [
@@ -135,7 +143,8 @@ function parseArticleBody(article, document) {
 
       removeSelectors = [
         ...removeSelectors,
-        'article>div'
+        'article>div',
+        '.interstitial-link'
       ];
       break;
     case 9:
@@ -158,6 +167,13 @@ function parseArticleBody(article, document) {
       div_selector = [
         '.primary-content-column',
         'div.text'
+      ];
+
+      removeSelectors = [
+        ...removeSelectors,
+        '.banner_wrapper',
+        'form',
+        '.connatix'
       ];
       break;
     case 11:
