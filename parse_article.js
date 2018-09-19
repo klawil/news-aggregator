@@ -176,11 +176,6 @@ function parseArticleBody(article, document) {
         '.connatix'
       ];
       break;
-    case 11:
-      div_selector = [
-        '.deep-read'
-      ];
-      break;
     default:
       throw new Error(`Unrecognized source: ${article.source_id}`);
   }
